@@ -18,7 +18,7 @@ def run_inference():
     # OpenAI client
     client = OpenAI(
         base_url=os.getenv("API_BASE_URL", "https://api.openai.com/v1"),
-        api_key=os.getenv("HF_TOKEN", os.getenv("OPENAI_API_KEY", "dummy"))
+        api_key=os.getenv("HF_TOKEN")
     )
 
     system_prompt = """You are an expert customer support routing agent. 
