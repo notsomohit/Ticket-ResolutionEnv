@@ -1,3 +1,12 @@
+---
+title: Ticket Resolution Env
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_file: app.py
+pinned: false
+---
 # Support Ticket Environment
 
 ## Problem Description
