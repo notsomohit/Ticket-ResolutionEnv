@@ -41,3 +41,10 @@ def step_env(action: Action):
 @app.get("/")
 def health():
     return {"status": "ok"}
+
+@app.get("/state")
+def get_state():
+    global env_instance
+    if env_instance is None:
+        raise HTTPException(status_code=400, detail="Environment not reset")
+    return {"state": env_instance.state().model_dump()}

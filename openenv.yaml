@@ -3,6 +3,7 @@ environment:
   name: support_ticket_env
   description: Customer support ticket resolution environment
   domain: Customer support ticket resolution
+  entry_point: "env:TicketResolutionEnv"
 tasks:
   - name: easy
     description: Process a single simple ticket.
