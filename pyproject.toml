@@ -1,13 +1,17 @@
 [project]
-name = "ticket-resolution-env"
+name = "ticket-env"
 version = "0.1.0"
 description = "Customer support ticket resolution environment for OpenEnv hackathon"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
-    "openai"
+    "openenv-core>=0.2.0"
 ]
+
+[project.scripts]
+server = "app:app"
 
 [build-system]
 requires = ["setuptools>=61.0"]
