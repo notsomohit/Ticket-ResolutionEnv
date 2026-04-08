@@ -7,15 +7,16 @@ dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
+    "openai",
     "openenv-core>=0.2.0"
 ]
 
 [project.scripts]
-server = "app:app"
+server = "server.app:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["env"]
+packages = ["env", "server"]
