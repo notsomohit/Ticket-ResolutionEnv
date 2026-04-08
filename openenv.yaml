@@ -1,0 +1,12 @@
+version: 1.0
+environment:
+  name: support_ticket_env
+  description: Customer support ticket resolution environment
+  domain: Customer support ticket resolution
+tasks:
+  - name: easy
+    description: Process a single simple ticket.
+  - name: medium
+    description: Process multiple tickets with varying priorities.
+  - name: hard
+    description: Process complex tickets requiring specific routing rules based on customer tier.
