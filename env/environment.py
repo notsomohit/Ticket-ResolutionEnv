@@ -4,6 +4,11 @@ from .tasks import get_task
 from .reward import calculate_step_reward
 
 class TicketResolutionEnv:
+    """
+    A reinforcement learning-style environment for customer support ticket resolution.
+    Agents must process tickets by setting category, assignee, and resolution fields
+    before closing the ticket.
+    """
     def __init__(self, task_name: str = "easy"):
         self.task_name = task_name
         self.task_data = get_task(task_name)
@@ -11,17 +16,21 @@ class TicketResolutionEnv:
         self.max_steps = 50
 
     def reset(self) -> Observation:
+        """Resets the environment to a clean state for a new session."""
         self.state_obj = State(
             tickets=[Ticket(**t) for t in self.task_data["tickets"]],
             current_ticket_index=0,
             total_reward=0.0,
             steps=0,
             done=False,
-            tier2_slots_remaining=2 # Constraint: Only 2 Tier2 assignments allowed per session
+            tier2_slots_remaining=2 
         )
         return self._get_obs("Environment reset. High-priority tickets may require faster resolution.")
 
     def step(self, action: Action) -> Tuple[Observation, float, bool, Dict[str, Any]]:
+        """
+        Processes a single action and returns the new observation, reward, done flag, and info.
+        """
         if self.state_obj.done:
             return self._get_obs("Episode already done."), 0.0, True, {"error": "Episode done"}
 
@@ -41,7 +50,7 @@ class TicketResolutionEnv:
         reward = 0.0
         if self.state_obj.last_action and self.state_obj.last_action.model_dump() == action.model_dump():
             self.state_obj.repeat_count += 1
-            reward -= (0.5 * self.state_obj.repeat_count) # Increasing penalty for repetition
+            reward -= (0.5 * self.state_obj.repeat_count)
         else:
             self.state_obj.repeat_count = 0
         self.state_obj.last_action = action
@@ -60,12 +69,11 @@ class TicketResolutionEnv:
                 msg = f"Category set to {action.value}."
             else:
                 reward -= 1.0
-                msg = f"Invalid category {action.value}."
+                msg = f"Invalid category {action.value}. Allowed: {', '.join(valid_categories)}"
                 error = "Invalid category"
 
         elif action.action_type == "set_assignee":
             if action.value in valid_assignees:
-                # --- Constraint System: Tier 2 Pool ---
                 if action.value == "tier2_support":
                     if self.state_obj.tier2_slots_remaining > 0:
                         self.state_obj.tier2_slots_remaining -= 1
@@ -73,8 +81,8 @@ class TicketResolutionEnv:
                         reward += calculate_step_reward(ticket, is_closing=False)
                         msg = f"Assignee set to tier2_support. Slots left: {self.state_obj.tier2_slots_remaining}"
                     else:
-                        reward -= 2.0 # Heavy penalty for ignoring constraints
-                        msg = "NO TIER 2 SLOTS REMAINING. Task must be handled by Tier 1 or Billing."
+                        reward -= 2.0
+                        msg = "NO TIER 2 SLOTS REMAINING. Must use Tier 1 or Billing."
                         error = "Resource exhausted"
                 else:
                     ticket.predicted_assignee = action.value
@@ -82,7 +90,7 @@ class TicketResolutionEnv:
                     msg = f"Assignee set to {action.value}."
             else:
                 reward -= 1.0
-                msg = f"Invalid assignee {action.value}."
+                msg = f"Invalid assignee {action.value}. Allowed: {', '.join(valid_assignees)}"
                 error = "Invalid assignee"
 
         elif action.action_type == "set_resolution":
@@ -92,7 +100,7 @@ class TicketResolutionEnv:
                 msg = f"Resolution set to {action.value}."
             else:
                 reward -= 1.0
-                msg = f"Invalid resolution {action.value}."
+                msg = f"Invalid resolution {action.value}. Allowed: {', '.join(valid_resolutions)}"
                 error = "Invalid resolution"
 
         elif action.action_type == "close_ticket":
@@ -108,10 +116,10 @@ class TicketResolutionEnv:
                 
                 if self.state_obj.current_ticket_index >= len(self.state_obj.tickets):
                     self.state_obj.done = True
-                    msg += " Episode Finished."
+                    msg += " All tickets completed."
         else:
             reward -= 5.0
-            msg = "MALFORMED ACTION TYPE."
+            msg = f"Unknown action type: {action.action_type}"
             error = "Malformed action"
 
         self.state_obj.total_reward += reward
