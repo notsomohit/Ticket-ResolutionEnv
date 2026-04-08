@@ -17,7 +17,7 @@ def run_inference():
 
     # OpenAI client
     client = OpenAI(
-        base_url=os.getenv("API_BASE_URL", "https://api.openai.com/v1"),
+        base_url=os.getenv("API_BASE_URL"),
         api_key=os.getenv("HF_TOKEN")
     )
 
