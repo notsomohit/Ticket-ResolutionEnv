@@ -2503,6 +2503,7 @@ requires-dist = [
     { name = "fastapi" },
     { name = "openenv-core", specifier = ">=0.2.0" },
     { name = "pydantic" },
+    { name = "uvicorn" },
     { name = "uvicorn", extras = ["standard"] },
 ]
 

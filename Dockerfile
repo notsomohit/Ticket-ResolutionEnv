@@ -8,20 +8,22 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install uv safely
-RUN pip install --no-cache-dir uv
+# Upgrade pip and install uv
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir uv
 
 # Copy dependency files
 COPY --chown=user pyproject.toml requirements.txt uv.lock ./
 
 # Install dependencies using uv sync or fallback to pip
-RUN uv sync --no-dev || pip install --no-cache-dir -r requirements.txt
+# Ensure we install into the user's home or a predictable location
+RUN uv sync --no-dev || pip install --no-cache-dir --user -r requirements.txt
 
 # Copy the rest of the application
 COPY --chown=user . .
 
-# Ensure we use the virtualenv created by uv if it exists
-ENV PATH="/app/.venv/bin:$PATH"
+# Ensure PATH includes both the .venv/bin (from uv) AND the user's local bin
+ENV PATH="/app/.venv/bin:/home/user/.local/bin:$PATH"
 
 # Expose the correct port for HF Spaces
 EXPOSE 7860

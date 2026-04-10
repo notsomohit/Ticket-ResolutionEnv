@@ -5,6 +5,7 @@ description = "Customer support ticket resolution environment for OpenEnv hackat
 requires-python = ">=3.10"
 dependencies = [
     "fastapi",
+    "uvicorn",
     "uvicorn[standard]",
     "pydantic",
     "openenv-core>=0.2.0"
