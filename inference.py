@@ -8,6 +8,9 @@ def run_inference(task="easy"):
     No OpenAI, no network, no crashes.
     """
     try:
+        # Structured Output: START
+        print("[START]task=TicketResolution", flush=True)
+        
         # Load task from env if available, else use default
         task = os.getenv("MY_ENV_TASK", task)
         
@@ -30,6 +33,12 @@ def run_inference(task="easy"):
 
             obs, reward, done, info = env.step(action)
             total_reward += reward
+            
+            # Structured Output: STEP
+            print(f"[STEP]step={step_count} reward={reward}", flush=True)
+
+        # Structured Output: END
+        print(f"[END]task=TicketResolution score={total_reward} steps={step_count}", flush=True)
 
         return {"status": "success", "reward": total_reward}
 
