@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from env import TicketResolutionEnv, Action
 
@@ -59,3 +60,6 @@ def get_state():
         raise HTTPException(status_code=400, detail="Environment not reset")
 
     return {"state": env_instance.state().model_dump()}
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=7860)
