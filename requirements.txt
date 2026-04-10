@@ -3,3 +3,4 @@ uvicorn
 uvicorn[standard]
 pydantic
 openenv-core>=0.2.0
+openai
